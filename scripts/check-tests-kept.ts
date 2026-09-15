@@ -14,7 +14,7 @@
 // main cannot merge, so the comparison a merge is gated on is always against main as it is.
 //
 // A removal that is meant is declared in a commit message, one trailer naming one exact
-// title, and CONTRIBUTING.md carries the wording. What the mechanism does not see is in
+// title, and AGENTS.md carries the wording. What the mechanism does not see is in
 // docs/VERIFICATION.md under "What check-tests-kept does not see".
 //
 // Usage: node scripts/check-tests-kept.ts [<branch-ref>] [<head-ref>], defaulting to origin/main and HEAD

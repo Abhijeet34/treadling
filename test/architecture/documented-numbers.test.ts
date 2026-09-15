@@ -234,7 +234,7 @@ describe('every document states one runtime floor and one bundle budget', () => 
   const engines = (JSON.parse(read('package.json')) as { engines: { node: string } }).engines.node
   const floor = /(\d+\.\d+)/.exec(engines)?.[1] ?? engines
 
-  for (const file of ['README.md', 'CONTRIBUTING.md', 'SECURITY.md', 'docs/STABILITY.md']) {
+  for (const file of ['README.md', 'AGENTS.md', 'docs/THREAT-MODEL.md', 'docs/STABILITY.md']) {
     it(`${file} names Node.js ${floor} as the floor`, () => {
       const stated = [...read(file).matchAll(/Node\.js (\d+\.\d+)/g)].map((match) => match[1])
       assert.ok(stated.length > 0, `${file} states no Node.js version`)
@@ -334,7 +334,7 @@ describe('every document that counts the threat model counts the register', () =
   const findings = [...register.matchAll(/^ {2}\{ id: 'F\d+',(.*)$/gm)].map((match) => match[1] as string)
   const closed = findings.filter((entry) => entry.includes(" test: '"))
 
-  for (const file of ['README.md', 'SECURITY.md', 'docs/PROVENANCE.md', 'AGENTS.md']) {
+  for (const file of ['README.md', 'docs/THREAT-MODEL.md', 'docs/PROVENANCE.md', 'AGENTS.md']) {
     it(`${file} spells the number of findings the register holds`, () => {
       const text = read(file)
       const line = text.split('\n').find((candidate) =>

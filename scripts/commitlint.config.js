@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Conventional Commits, with the type list this project actually uses.
-// CONTRIBUTING.md carries the same list in prose; this file is what CI enforces.
+// AGENTS.md carries the same list in prose; this file is what CI enforces.
 
 export default {
   extends: ['@commitlint/config-conventional'],

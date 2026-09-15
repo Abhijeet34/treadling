@@ -1,45 +1,29 @@
 # Support
 
-One maintainer, in his own time.
-Here is where each kind of question goes, so you get an answer rather than silence.
+treadling has one maintainer, so each kind of question has exactly one place to go.
 
 ## Something is broken
 
 [Open a bug report](https://github.com/Abhijeet34/treadling/issues/new?template=bug.yml).
-
-The report that gets fixed fastest names the version or commit you ran, your operating system and `node --version`, the exact command, what you expected, and what happened instead.
-Paste the output rather than describing it.
+Name the version or commit you ran, your operating system, the exact command, what you expected and what happened instead.
+Paste the output instead of describing it.
 
 ## A security problem
 
-Do not open a public issue.
-[SECURITY.md](SECURITY.md) has the private route and what to expect.
+Not in an issue.
+[SECURITY.md](SECURITY.md) gives the private route.
 
-## You want it to do something it does not do
+## Something it does not do yet
 
 [Open a feature request](https://github.com/Abhijeet34/treadling/issues/new?template=feature.yml).
+Describe what you were trying to get done before describing what you want added.
 
-Say what you were trying to accomplish before saying what you want added.
-The design for this project was written before the code, so a request that names the problem can often be answered from a decision that already exists.
+## How it works
 
-## A question about how it works
-
-Start with the docs; they are short and they are the specification rather than a summary of it.
-
-- [README.md](README.md) for what it is and what state it is in.
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the layers and the seams.
-- [docs/DOMAIN.md](docs/DOMAIN.md) for the types, the lifecycle, the relations and the gates, and the rule ids errors name.
-- [docs/STABILITY.md](docs/STABILITY.md) for what counts as a breaking change.
-- [CONTRIBUTING.md](CONTRIBUTING.md) for setting up and for the rules a change is held to.
-
-If the answer is not there, that is a documentation bug worth an issue of its own.
-
-## What is not supported
-
-`@abhijeet34/treadling@0.2.1` is on the registry and is pre-1.0, so nothing about it is promised to stay put: [docs/STABILITY.md](docs/STABILITY.md) is the policy, and a breaking change can land in a minor version.
-See [docs/RELEASING.md](docs/RELEASING.md) for what a release is, and for why the release run still does not publish.
+`README.md` covers what treadling is and how to use it, and `AGENTS.md` covers how it is built and tested.
+A question neither of them answers is a gap in the documentation, and it deserves an issue of its own.
 
 ## Response times
 
-Best effort.
-Security reports get the timelines in [SECURITY.md](SECURITY.md), which are the only ones promised.
+Best effort, from one person.
+The only promised timelines are the security ones in [SECURITY.md](SECURITY.md).

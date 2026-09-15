@@ -417,4 +417,4 @@ The comparison is against the merge base, so a test main gained after the fork i
 
 The README's Quick start carries the gate commands and what each one runs.
 Two forms belong to this file's subject rather than to that block: `npm run flake -- 5` is a shorter local check than the 20-run default, and `TREADLING_FUZZ_INPUTS=<n> npm test` raises the fuzzer above its gate count for a soak run.
-`npm run tests-kept` is the third, and CONTRIBUTING.md carries it beside the trailer that declares a removal.
+`npm run tests-kept` is the third, and AGENTS.md carries it beside the trailer that declares a removal.
