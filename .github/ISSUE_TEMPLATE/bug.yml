@@ -1,34 +1,32 @@
 # SPDX-License-Identifier: Apache-2.0
 name: Bug report
-description: Something behaves differently from what the docs say.
+description: Something behaves differently from what the documentation says.
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Not a bug in behaviour but a security problem? Do not file it here.
+        A security problem does not belong here.
         Use the private route in [SECURITY.md](https://github.com/Abhijeet34/treadling/blob/main/SECURITY.md).
   - type: input
     id: version
     attributes:
       label: Version or commit
-      description: The release tag you ran, or the commit SHA if you built from source.
-      placeholder: v0.1.0, or 13f8747
+      description: The release you ran, or the commit SHA if you built from source.
     validations:
       required: true
   - type: input
     id: environment
     attributes:
-      label: Operating system and Node version
-      description: Output of `node --version`, and which OS.
-      placeholder: macOS 15.6, Node v24.15.0
+      label: Operating system and runtime
+      description: Which operating system, and the version of the runtime the project needs.
     validations:
       required: true
   - type: textarea
     id: command
     attributes:
       label: What you ran
-      description: The exact command, and the output. Paste it rather than describing it.
+      description: The exact command and its output, pasted rather than described.
       render: text
     validations:
       required: true
@@ -36,12 +34,11 @@ body:
     id: expected
     attributes:
       label: What you expected, and what happened instead
-      description: If the docs say something different from what you saw, quote the line.
+      description: If the documentation says something different from what you saw, quote the line.
     validations:
       required: true
   - type: textarea
-    id: workspace
+    id: reproduction
     attributes:
-      label: The smallest workspace that reproduces it
-      description: Optional, and the single most useful thing you can attach.
-      render: markdown
+      label: The smallest input that reproduces it
+      description: Optional, and the most useful thing you can attach.

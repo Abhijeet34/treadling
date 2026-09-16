@@ -257,6 +257,24 @@ said: the short name a read surface prints (`desc`) and the dictionary name a wr
 (`description`) resolve to one field on every path. They did not, and each path's refusal
 asserted the other path's name did not exist.
 
+## Contributing: setup, commits and pull requests
+
+`CONTRIBUTING.md` is the owned repository standard shared across `Abhijeet34`'s repositories and
+defers to this file for the project's own rules, so they live here; `SECURITY.md` is the same
+standard, and `docs/THREAT-MODEL.md` carries this project's scope, known findings and supply-chain controls.
+
+Setup needs Node.js 24.15 or newer (`.nvmrc` names it): `npm ci`, then
+`git config core.hooksPath .githooks` to arm the pre-push secret scan ("Secret scanning" below),
+then `npm run check`. Open an issue before anything larger than a fix: the design was written
+before the code, and a change that contradicts a decision record changes the record first.
+
+- **Sign off every commit** (`git commit -s`) under the [Developer Certificate of Origin](https://developercertificate.org/), which is not a copyright assignment. CI fails on the first commit without `Signed-off-by:`; `git rebase --signoff origin/main` fixes a branch.
+- **Conventional Commits**, checked by commitlint in CI: `npx commitlint --config scripts/commitlint.config.js --from origin/main --to HEAD`. Types in use are `feat`, `fix`, `docs`, `chore`, `build`, `ci`, `test`, `perf`, `refactor`, each a section in `release-please-config.json`; a dependency bump is a scope (`chore(deps)`, `ci(deps)`), not a type. A breaking change carries `!` or a `BREAKING CHANGE:` footer, and `docs/STABILITY.md` says what counts as one; name it in the pull request.
+- **A test `main` has may not be removed** without one `Removes-test: <exact title as declared>` trailer per test. Renaming a title or turning it into a skip in either form (`it.skip(...)`, `{ skip: reason }`) counts as removal, and a trailer naming a title the branch does not remove fails too. Check with `npm run tests-kept`; ADR-0013 argues it.
+- **Zero runtime dependencies.** A runtime dependency needs a decision record first; development dependencies are fine.
+- **No em dashes** in anything committed: a plain hyphen or a new sentence.
+- **Pull requests** say the original intent, what changed, how it was tested with the runner's own output, and why the approach beats the alternative rejected. CI runs Linux on a pull request ("CI runner platforms" below).
+
 ## Rules that are tests rather than conventions
 
 Do not hand-check any of these: run `npm run check`, which already does.
