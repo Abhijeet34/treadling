@@ -180,11 +180,18 @@ Nine more left the workspace through `treadling remove`, which takes a record ou
 - [docs/RELEASING.md](docs/RELEASING.md) - how a release happens, why no release carries a human signature, what still stands between the release run and npm, and how to roll one back.
 - [docs/PROVENANCE.md](docs/PROVENANCE.md) - how this was built, and why no third-party notice attaches.
 - [docs/VERIFICATION.md](docs/VERIFICATION.md) - every claim this project makes about itself, with the measurement behind it and the ones that are not proven.
-- [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [SUPPORT.md](SUPPORT.md).
+- [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) - what the tool defends, which reports are in scope, and the supply-chain controls it holds itself to.
 
 Every figure in this file that can be derived from the tree is held to it by `test/architecture/documented-numbers.test.ts`: the command list against the inventory, the type count against `WORK_ITEM_TYPES`, the backlog figures against `.work`, the doctor's finding ids and their count against what `doctor` raises, the threat model's totals against the register in `test/security/findings.test.ts`, the axis counts against what the rig emits, the rendering count against `RENDERINGS`, the seam count against the table in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), the Node floor against `engines.node`, and the bundle budget against `bench/budgets.json`.
 Every number that test now checks was correct on the day it was written and went stale in silence, which is the case a habit does not catch and a test does.
 What it deliberately does not check is a measurement: a wall time, a test count, a byte count of the tree or a coverage decimal is a figure of a run rather than of a tree, and moves on a commit that changed nothing about the claim. [docs/VERIFICATION.md](docs/VERIFICATION.md) carries those with the run they came from, and what the test holds about the two in the paragraph above is that neither is ever printed here without the runtime and the date it was measured on.
+
+## Contributing, security and support
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - what every change needs; the setup, commit and sign-off rules specific to treadling are in [AGENTS.md](AGENTS.md), "Contributing: setup, commits and pull requests".
+- [SECURITY.md](SECURITY.md) - report a vulnerability privately through [GitHub's advisory form](https://github.com/Abhijeet34/treadling/security/advisories/new), never in an issue. [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) says which reports are in scope.
+- [SUPPORT.md](SUPPORT.md) - where a bug, a feature request or a question goes. [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) applies in all of the project's community spaces.
+- treadling is pre-1.0, so a breaking change can land in a minor version; [docs/STABILITY.md](docs/STABILITY.md) is the policy.
 
 ## Licence
 
