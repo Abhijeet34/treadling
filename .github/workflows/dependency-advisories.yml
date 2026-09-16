@@ -1,6 +1,6 @@
 name: dependency advisories
 
-# Caller of automation's shared-dependency-advisories.yml; the design and the
+# Caller of gates' shared-dependency-advisories.yml; the design and the
 # live red/green runs behind it are in automation's .ci/shared-workflows.md.
 # @main with no digest pin is deliberate, so a change to the shared body is
 # live here on the next run.
@@ -30,4 +30,4 @@ permissions:
 
 jobs:
   advisories:
-    uses: Abhijeet34/automation/.github/workflows/shared-dependency-advisories.yml@main
+    uses: Abhijeet34/gates/.github/workflows/shared-dependency-advisories.yml@main
