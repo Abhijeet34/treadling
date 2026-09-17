@@ -51,7 +51,7 @@ The range is the pull request's own commits, so a trailer that merges into main 
 
 ### The job is required by name, outside the workflow file
 
-`.github/rulesets/main.json` requires the `tests kept` and `secret scan` contexts beside `checks`.
+`.github/rulesets/main.json` requires the `tests kept` and `secrets / secret scan` contexts beside `checks`.
 This is the part of the decision that is not a convenience.
 `checks` is an aggregate that `needs:` the jobs in its own workflow, and that workflow file is in the branch: a resolution that deleted the `tests-kept` job from `.github/workflows/ci.yml` would leave `checks` green with the guard gone, which is the exact failure mode the guard exists to stop.
 A required context named in the ruleset is a fact on the forge.

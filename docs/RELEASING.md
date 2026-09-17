@@ -288,7 +288,7 @@ A parked run is not a slow run.
 The branch name in the two measurements below ends in the package's old name, which ADR-0038 retired; release-please derives that branch from the package name, but what it derives under the scoped `@abhijeet34/treadling` name is unread rather than predicted, and will be taken from the first real release-please run under that name: this document's convention, and ADR-0038 and ADR-0039, state only what a run showed, and a scope's `@` and `/` cannot survive unchanged in a git branch component, so any derived value here would be a guess dressed as a measurement.
 Measured on 2026-09-08, run `34176306546` on `release-please--branches--main--components--treadle` reported `created_at`, `run_started_at` and `updated_at` all at `2026-09-08T01:20:18Z`, and `0` jobs.
 Fourteen consecutive runs on that branch concluded `action_required` the same way, over 2026-09-07 and 2026-09-08.
-`.github/rulesets/main.json` requires the `checks`, `tests kept` and `secret scan` contexts on `main`, so a release pull request whose checks never ran can never merge, and step 2 above stops there.
+`.github/rulesets/main.json` requires the `checks`, `tests kept` and `secrets / secret scan` contexts on `main`, so a release pull request whose checks never ran can never merge, and step 2 above stops there.
 
 A parked run also attaches no check to the pull request, so the pull request page reported nothing rather than reporting a wait: `gh pr checks 69` answered `no checks reported on the 'release-please--branches--main--components--treadle' branch` while two runs sat at `action_required` on its head commit, and the Release run on `main`'s own head reported success at the same moment.
 That quote keeps the branch name the run answered with, retired with the package name.
@@ -423,7 +423,7 @@ A settings script that half-applies is worse than one that refuses, because the 
 
 | File | What it sets |
 |---|---|
-| `.github/rulesets/main.json` | Signed commits, squash-only merges, no force push, no deletion, and the required `checks`, `tests kept` and `secret scan` contexts |
+| `.github/rulesets/main.json` | Signed commits, squash-only merges, no force push, no deletion, and the required `checks`, `tests kept` and `secrets / secret scan` contexts |
 | `.github/rulesets/tags.json` | A `refs/tags/v*` tag that cannot be updated or deleted. No signature is required: see "Why the tag is no longer signed". The name itself is checked by the release preflight, not here |
 | `.github/settings/repository.json` | Squash-only, keeping the commit messages so a `Release-As:` footer survives, and deleting a branch once its pull request merges |
 | `.github/settings/actions-permissions.json` | `sha_pinning_required`, so an unpinned action cannot come back |

@@ -213,6 +213,10 @@ describe('F13 control three: the release path attests what it publishes', () => 
         for (const ref of job.uses) {
           // A local reusable workflow is a path in this repository, so it has no ref to pin.
           if (ref.startsWith('./')) continue
+          // gates' shared workflows are the fleet's own and are called at @main by design, so a
+          // repin there reaches every caller with no edit. GitHub's SHA-pinning policy exempts
+          // reusable workflows, so this is the only place that would refuse the ref.
+          if (/^Abhijeet34\/gates\/\.github\/workflows\/shared-[a-z-]+\.yml@main$/.test(ref)) continue
           assert.match(ref, /@[0-9a-f]{40}$/, `${file}:${jobName} uses ${ref}, which is not a commit SHA`)
         }
       }

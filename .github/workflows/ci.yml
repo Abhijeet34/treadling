@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Every job a merge depends on lives in this one file, because the `checks` aggregate at the
 # bottom can only `needs:` jobs in its own workflow. The ruleset requires that one context and
-# two others named outside it: `tests kept`, below, and `secret scan` from
+# two others named outside it: `tests kept`, below, and `secrets / secret scan` from
 # .github/workflows/secret-scan.yml. `tests kept` is named in the ruleset rather than reached
 # through the aggregate because a branch that deleted it from this file would otherwise leave
 # `checks` green with the guard gone (ADR-0013). Every other job here can be added or renamed
@@ -50,8 +50,9 @@ jobs:
     # carries no verdict; the steps below bound themselves first.
     timeout-minutes: 15
     env:
-      # The same pins secret-scan.yml carries, asserted equal to that job's by
-      # test/architecture/secret-scan-fixture.test.ts so the two copies cannot drift apart.
+      # The pins gates' shared-secret-scan.yml carries, which secret-scan.yml calls. Nothing here
+      # can read that file offline, so a repin there is copied here by hand; a stale copy only
+      # changes which gitleaks runs the two fixture scans, never the backstop scan itself.
       GITLEAKS_VERSION: "8.30.1"
       GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
       # With this set, the two scans in that file fail on a missing binary instead of skipping,
@@ -87,7 +88,7 @@ jobs:
       # matching turns the secret-scanning gate into a check that always passes. Those two
       # scans need the binary, and no job that ran `npm test` had ever installed it: they
       # skipped on all three platforms of every run. Downloaded and checksummed for the reason
-      # the actionlint job states, from the same pins as secret-scan.yml.
+      # the actionlint job states, from the pins above.
       - name: Install gitleaks, which the secret-scan fixture tests need to run at all
         run: |
           set -euo pipefail
@@ -204,7 +205,7 @@ jobs:
         run: scripts/check-dco.sh "$BASE" "$HEAD"
 
   # One of two jobs named in .github/rulesets/main.json beside `checks`, the other being
-  # `secret scan` in .github/workflows/secret-scan.yml, and it is named there because of what
+  # `secrets / secret scan` from .github/workflows/secret-scan.yml, and it is named there because of what
   # it checks. A branch that deletes this job from this file would leave `checks` green with
   # the guard gone, which is the failure the guard exists to stop; a required context the
   # branch cannot write is what closes that. ADR-0013 carries the argument, and renaming this

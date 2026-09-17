@@ -13,6 +13,7 @@
 
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -134,7 +135,6 @@ function jobOf(file: string, name: string): Job {
 
 describe('the job that runs the suite carries the scanner the two scans above need', () => {
   const check = jobOf('ci.yml', 'check')
-  const secrets = jobOf('secret-scan.yml', 'secrets')
 
   it('installs gitleaks in the same job that runs npm test, and refuses to skip without it', () => {
     const installs = check.steps.filter((step) => step.run?.includes('gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz'))
@@ -147,10 +147,17 @@ describe('the job that runs the suite carries the scanner the two scans above ne
     )
   })
 
-  it('pins the version and digest secret-scan.yml pins, so the two copies cannot drift apart', () => {
-    for (const key of ['GITLEAKS_VERSION', 'GITLEAKS_SHA256']) {
-      assert.equal(check.env[key], secrets.env[key], `${key} differs between ci.yml and secret-scan.yml`)
-      assert.ok((check.env[key] ?? '').length > 2, `${key} is unset in ci.yml`)
-    }
+})
+
+// The backstop scan is gates' shared workflow, which owns the gitleaks version and the digests
+// of .gitleaks.toml and .githooks/pre-push. An inlined copy here stopped following a repin of
+// those digests without any check going red, so what this holds is that no local copy returns.
+describe('the secret scan follows the fleet', () => {
+  it("calls gates' shared secret scan at @main and pins nothing of its own", () => {
+    const secrets = jobOf('secret-scan.yml', 'secrets')
+    assert.deepEqual(secrets.uses, ['Abhijeet34/gates/.github/workflows/shared-secret-scan.yml@main'])
+    assert.deepEqual(secrets.steps, [], 'secret-scan.yml runs steps of its own again, so it is an inlined copy')
+    const text = readFileSync(path.join(ROOT, '.github', 'workflows', 'secret-scan.yml'), 'utf8')
+    assert.doesNotMatch(text, /CONFIG_SHA256|HOOK_SHA256|GITLEAKS_SHA256/, 'secret-scan.yml carries a local pin again')
   })
 })

@@ -32,7 +32,7 @@
         "required_status_checks": [
           { "context": "checks" },
           { "context": "tests kept" },
-          { "context": "secret scan" }
+          { "context": "secrets / secret scan" }
         ]
       }
     }
