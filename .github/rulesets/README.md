@@ -11,7 +11,7 @@ That gap has been real twice.
   `release-tag` then created an unsigned tag as the automation, GitHub refused it, and the refusal read `Resource not accessible by integration`, which looks like a token problem and is not one.
 - `main.json` has required the `tests kept` context since #32.
   Live ruleset `22314350` was last modified on 2026-09-08 and requires `checks` and `secret scan`, so the guard [ADR-0013](../../docs/architecture/adr/0013-a-branch-may-not-remove-a-test-main-has.md) argues for has never been a required context on `main`, and `secret scan` was required there with no file naming it.
-  `main.json` now names all three, `checks`, `tests kept` and `secret scan`, because the drift check does not say which side is right: matching the file to live here would have dropped a guard the forge already enforced, so the file gained a context instead of losing one.
+  `main.json` now names all three, `checks`, `tests kept` and `secret scan` (reported as `secrets / secret scan` since the scan moved onto gates' shared workflow), because the drift check does not say which side is right: matching the file to live here would have dropped a guard the forge already enforced, so the file gained a context instead of losing one.
 
 A file nobody reads back is documentation, whatever it is called.
 
@@ -36,7 +36,7 @@ It needs no credential: both ruleset endpoints answer an unauthenticated request
 
 The `ruleset drift` workflow runs it weekly, on a pull request that touches these files, and in front of the tag on the release path.
 A `v*` tag can be neither updated nor deleted, so a tag cut against a tag ruleset nobody had read costs a version number permanently.
-That is why it exits 1 in front of `release-tag` today: `main.json` names `checks`, `tests kept` and `secret scan`, live ruleset `22314350` enforces only `checks` and `secret scan`, so the release path stays blocked until `scripts/apply-repo-settings.sh` applies `tests kept` to the live rule, a protection being added rather than one being removed.
+That is why it exits 1 in front of `release-tag` today: `main.json` names `checks`, `tests kept` and `secrets / secret scan`, live ruleset `22314350` enforces only `checks` and `secret scan`, so the release path stays blocked until `scripts/apply-repo-settings.sh` applies `tests kept` and the renamed context to the live rule, a protection being added rather than one being removed.
 
 One field it cannot check: `bypass_actors` is served only to a read by a repository administrator, so an unprivileged run reports that it could not compare it rather than counting it as matching.
 Run the command locally, signed in as an administrator, to have that field compared too.

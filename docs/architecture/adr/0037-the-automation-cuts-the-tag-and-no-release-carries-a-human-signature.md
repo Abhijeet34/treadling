@@ -177,7 +177,7 @@ One file changed between the two runs, and the tag under test is the one that is
 
 The key fingerprint is truncated in both transcripts above.
 It is a public key's fingerprint and not a secret, and `.gitleaks.toml`'s `generic-api-key` rule matches it on entropy alone: the full 43 characters refuse the push at `.githooks/pre-push`.
-That config is pinned by digest to `automation`'s canonical copy in `.github/workflows/secret-scan.yml`, so the allowlist is not this repository's to edit, and nothing here is worth routing a secret-scanning gate around.
+That config is pinned by digest to the canonical copy in the `gates` shared workflow that `.github/workflows/secret-scan.yml` calls, so the allowlist is not this repository's to edit, and nothing here is worth routing a secret-scanning gate around.
 
 The rest of the gate stands unchanged: `v<semver>`, the version the tree declares, the commit being on `main`, the bundle existing, being inside DR8's budget, being above a tenth of it, and being newer than every file under `src/`.
 The six publishing refusals stand too, and are now each demonstrated firing rather than asserted: `private: true`, an absent or `UNLICENSED` licence, a missing `files` allowlist, a `bin` pointing outside the bundle, and a `repository` field npm's provenance prerequisites reject.
