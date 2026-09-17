@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 name: dependency advisories
 
 # Caller of gates' shared-dependency-advisories.yml; the design and the
