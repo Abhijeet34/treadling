@@ -25,6 +25,8 @@ export type Job = {
   permissions: Record<string, string>
   /** The job's `env:` block, values still holding any `${{ }}` the caller must expand. */
   env: Record<string, string>
+  /** The job-level `with:` block a reusable-workflow call passes inputs through, not a step's. */
+  with: Record<string, string>
   /** The jobs this one waits for, from either the scalar or the bracket-list form. */
   needs: readonly string[]
   uses: string[]
@@ -36,12 +38,17 @@ function field(block: string, key: string): string | undefined {
   return new RegExp(`^ {4}${key}:\\s*(.+)$`, 'm').exec(block)?.[1]?.trim()
 }
 
-/** A job's `env:` block as a key/value map, rather than a line matched anywhere in it. */
-function envOf(block: string): Record<string, string> {
-  const section = /^ {4}env:\n((?: {6}.+\n?)+)/m.exec(`${block}\n`)?.[1] ?? ''
+/**
+ * A job-level block of `key: value` lines under a 4-space-indented section header, as a map,
+ * rather than a line matched anywhere in the job. Shared by `env:`, `permissions:` and `with:`:
+ * all three are the same shape, and a job-level `with:` sits at the same 4-space depth as those,
+ * distinct from a step's own `with:` which sits deeper under `      - uses: ...`.
+ */
+function sectionOf(block: string, key: string): Record<string, string> {
+  const section = new RegExp(`^ {4}${key}:\\n((?: {6}.+\\n?)+)`, 'm').exec(`${block}\n`)?.[1] ?? ''
   const out: Record<string, string> = {}
   for (const line of section.split('\n')) {
-    const kv = /^ {6}([A-Za-z0-9_]+):\s*(.+)$/.exec(line)
+    const kv = /^ {6}([A-Za-z0-9_-]+):\s*(.+)$/.exec(line)
     if (kv) out[kv[1] as string] = (kv[2] as string).trim()
   }
   return out
@@ -54,16 +61,6 @@ function needsOf(block: string): readonly string[] {
   return (bracket ? (bracket[1] as string).split(',') : [raw])
     .map((entry) => entry.trim())
     .filter((entry) => entry.length > 0)
-}
-
-function permissionsOf(block: string): Record<string, string> {
-  const section = /^ {4}permissions:\n((?: {6}.+\n?)+)/m.exec(`${block}\n`)?.[1] ?? ''
-  const out: Record<string, string> = {}
-  for (const line of section.split('\n')) {
-    const kv = /^ {6}([a-zA-Z0-9_-]+):\s*(.+)$/.exec(line)
-    if (kv) out[kv[1] as string] = (kv[2] as string).trim()
-  }
-  return out
 }
 
 /**
@@ -129,8 +126,9 @@ export function parseWorkflow(text: string): Record<string, Job> {
       ifExpr: field(block, 'if'),
       runsOn: field(block, 'runs-on'),
       environment: field(block, 'environment'),
-      permissions: permissionsOf(block),
-      env: envOf(block),
+      permissions: sectionOf(block, 'permissions'),
+      env: sectionOf(block, 'env'),
+      with: sectionOf(block, 'with'),
       needs: needsOf(block),
       uses: [...block.matchAll(/^\s*(?:-\s*)?uses:\s*(\S+)/gm)].map((m) => m[1] as string),
       steps: stepsOf(block),

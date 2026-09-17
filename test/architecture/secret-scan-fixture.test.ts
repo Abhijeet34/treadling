@@ -13,7 +13,6 @@
 
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -157,7 +156,7 @@ describe('the secret scan follows the fleet', () => {
     const secrets = jobOf('secret-scan.yml', 'secrets')
     assert.deepEqual(secrets.uses, ['Abhijeet34/gates/.github/workflows/shared-secret-scan.yml@main'])
     assert.deepEqual(secrets.steps, [], 'secret-scan.yml runs steps of its own again, so it is an inlined copy')
-    const text = readFileSync(path.join(ROOT, '.github', 'workflows', 'secret-scan.yml'), 'utf8')
-    assert.doesNotMatch(text, /CONFIG_SHA256|HOOK_SHA256|GITLEAKS_SHA256/, 'secret-scan.yml carries a local pin again')
+    assert.deepEqual(secrets.env, {}, 'secret-scan.yml pins a digest through env: again')
+    assert.deepEqual(secrets.with, {}, 'secret-scan.yml pins a digest through with: again')
   })
 })
