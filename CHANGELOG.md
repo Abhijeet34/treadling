@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/Abhijeet34/treadling/compare/v0.2.2...v0.2.3) (2026-09-18)
+
+
+### Documentation
+
+* adopt the owned repository standard for community files ([#110](https://github.com/Abhijeet34/treadling/issues/110)) ([bef9f08](https://github.com/Abhijeet34/treadling/commit/bef9f08212a27bc64a4f0d9407cdae257a11b9aa))
+
 ## [0.2.2](https://github.com/Abhijeet34/treadling/compare/v0.2.1...v0.2.2) (2026-09-10)
 
 
