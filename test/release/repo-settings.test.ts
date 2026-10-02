@@ -102,7 +102,7 @@ describe('apply-repo-settings.sh', () => {
 
 describe('.github/settings/actions-fork-pr-approval.json', () => {
   // The release pull request is opened by github-actions[bot], which holds no write access and
-  // has never had a pull request merged here, so `first_time_contributors` parks every check on
+  // is no collaborator here, so `all_external_contributors` parks every check on
   // it at `action_required`: fourteen consecutive runs on the release branch were created,
   // started and updated at the same instant with zero jobs (2026-09-07 to 2026-09-08).
   // The remedy is the `release-pr-checks` job releasing them with the run's own token, per
@@ -112,7 +112,7 @@ describe('.github/settings/actions-fork-pr-approval.json', () => {
     const policy = JSON.parse(
       await readFile(path.join(ROOT, '.github/settings/actions-fork-pr-approval.json'), 'utf8'),
     ) as { approval_policy: string }
-    assert.equal(policy.approval_policy, 'first_time_contributors')
+    assert.equal(policy.approval_policy, 'all_external_contributors')
   })
 })
 
