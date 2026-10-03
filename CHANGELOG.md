@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.3](https://github.com/Abhijeet34/treadling/compare/v0.2.2...v0.2.3) (2026-10-03)
+
+
+### Bug Fixes
+
+* **cli:** stop the suite depending on the wall-clock month ([#124](https://github.com/Abhijeet34/treadling/issues/124)) ([120d4cf](https://github.com/Abhijeet34/treadling/commit/120d4cf753267892597d6963fa52e999aa9f63a4))
+* **scripts:** route repo-settings writes through gh api, not gh-axi ([#125](https://github.com/Abhijeet34/treadling/issues/125)) ([3cddc8c](https://github.com/Abhijeet34/treadling/commit/3cddc8c2f23ee1705e455fcdb89d41bf3bdc92e2))
+
+
+### Documentation
+
+* adopt the owned repository standard for community files ([#110](https://github.com/Abhijeet34/treadling/issues/110)) ([bef9f08](https://github.com/Abhijeet34/treadling/commit/bef9f08212a27bc64a4f0d9407cdae257a11b9aa))
+
 ## [0.2.2](https://github.com/Abhijeet34/treadling/compare/v0.2.1...v0.2.2) (2026-09-10)
 
 
