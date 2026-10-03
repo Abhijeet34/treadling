@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // The process boundary, and the esbuild entry point (DR1). It owns argv, the streams, the
 // TTY test, the clock and the exit status; everything a test needs to drive is `run`, which
-// takes all of them as arguments, so the suite never spawns a process to check what a command printed.
+// takes all of them as arguments, so the suite never spawns a process to check what a
+// command printed.
 //
 // `bin/treadling.js` imports this file to run from source in development. The release build
 // bundles it into `dist/treadling.js`, which is the executable the published package installs.
