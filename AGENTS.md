@@ -120,6 +120,12 @@ tree. `test/store/reclaim-fence.test.ts` is the in-process half and says in its 
 is one; when the window is a known pair of lines, hold it open from inside rather than sampling
 for it.
 
+No test may depend on the wall-clock month: a write lands in the shard and log named for the
+month it was made in. `runCli` pins `run`'s clock to the demo's instant and exports `MONTH`
+for the shard name; a test that spawns the binary derives nothing from its own `Date`.
+`npm run test:at -- <instant>` runs the suite with every process's system clock starting
+there, and a month's last second and a year boundary are the instants worth running.
+
 Two more gates sit beside `npm run check`, and neither is in it because both cost minutes.
 `npm run coverage` runs the suite under Node's own coverage and holds it to the table in
 `scripts/coverage.ts`; `npm run flake` runs the whole suite 20 times and fails on any failure or
