@@ -13,6 +13,9 @@
 #
 # docs/RELEASING.md, "The settings that are not files", carries the reasoning; this file
 # carries the commands so nobody retypes them.
+#
+# Writes go through plain `gh api`: `gh-axi api` has no -X and no --input, so every write
+# here was refused with VALIDATION_ERROR and nothing was ever applied through it.
 set -u
 
 REPO="${1:?usage: apply-repo-settings.sh OWNER/REPO}"
@@ -44,10 +47,10 @@ apply_ruleset() {
   id=$(printf '%s\n' "$listing" | tr -d ' ' | grep -E '^[0-9]+$' || true)
   if [ -n "$id" ]; then
     echo "updating ruleset $name ($id) from $file"
-    gh-axi api -X PUT "repos/$REPO/rulesets/$id" --input "$file" || fail "ruleset $name from $file"
+    gh api -X PUT "repos/$REPO/rulesets/$id" --input "$file" || fail "ruleset $name from $file"
   else
     echo "creating ruleset $name from $file"
-    gh-axi api -X POST "repos/$REPO/rulesets" --input "$file" || fail "ruleset $name from $file"
+    gh api -X POST "repos/$REPO/rulesets" --input "$file" || fail "ruleset $name from $file"
   fi
 }
 
@@ -55,16 +58,16 @@ apply_ruleset .github/rulesets/main.json
 apply_ruleset .github/rulesets/tags.json
 
 # Squash only, and keep the commit messages: a Release-As: footer has to survive.
-gh-axi api -X PATCH "repos/$REPO" --input .github/settings/repository.json \
+gh api -X PATCH "repos/$REPO" --input .github/settings/repository.json \
   || fail 'repository settings from .github/settings/repository.json'
 
 # Read-only default token, and no unpinned action can come back. `enabled` is required in the
 # second body: sending sha_pinning_required on its own is a validation error, not a partial
 # update.
-gh-axi api -X PUT "repos/$REPO/actions/permissions/workflow" \
+gh api -X PUT "repos/$REPO/actions/permissions/workflow" \
   --input .github/settings/actions-workflow-permissions.json \
   || fail 'workflow permissions from .github/settings/actions-workflow-permissions.json'
-gh-axi api -X PUT "repos/$REPO/actions/permissions" \
+gh api -X PUT "repos/$REPO/actions/permissions" \
   --input .github/settings/actions-permissions.json \
   || fail 'Actions permissions from .github/settings/actions-permissions.json'
 
@@ -72,7 +75,7 @@ gh-axi api -X PUT "repos/$REPO/actions/permissions" \
 # already has: the point of the call is that the value is readable out of the tree and moves
 # only by editing this file, because loosening it is the obvious wrong way to unpark them.
 # docs/RELEASING.md, "What stands between the release pull request and a merge".
-gh-axi api -X PUT "repos/$REPO/actions/permissions/fork-pr-contributor-approval" \
+gh api -X PUT "repos/$REPO/actions/permissions/fork-pr-contributor-approval" \
   --input .github/settings/actions-fork-pr-approval.json \
   || fail 'fork pull request approval from .github/settings/actions-fork-pr-approval.json'
 
