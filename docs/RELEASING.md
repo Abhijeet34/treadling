@@ -419,7 +419,9 @@ It is idempotent: a ruleset whose name already exists is updated in place rather
 It applies every setting it can and names the ones it could not, together, at the end, and exits non-zero when anything failed.
 That is deliberate: it used to stop at the first refusal, so the tag ruleset GitHub rejects left the repository settings and both Actions permission calls unapplied while the exit code said only that something had gone wrong.
 A settings script that half-applies is worse than one that refuses, because the operator cannot tell from the exit code which half happened.
-`test/release/repo-settings.test.ts` holds that behaviour, driving the real script against a stubbed `gh-axi`.
+`test/release/repo-settings.test.ts` holds that behaviour, driving the real script against stubbed `gh` and `gh-axi`.
+Every write goes through plain `gh api -X ... --input <file>`, because `gh-axi api` has no `-X` and no `--input`, and the test's `gh-axi` stub refuses both flags the way the real tool does.
+Reads, the ruleset listing with `--jq` and the verify lines printed at the end, stay on `gh-axi`.
 
 | File | What it sets |
 |---|---|
