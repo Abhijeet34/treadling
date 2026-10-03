@@ -54,7 +54,7 @@ jobs:
           skip-github-release: true
 
   # The release pull request's checks do not start on their own. release-please opens it as
-  # `github-actions[bot]`, this repository's `first_time_contributors` approval policy parks
+  # `github-actions[bot]`, this repository's `all_external_contributors` approval policy parks
   # every run on that branch, and a parked run attaches no check to the pull request at all,
   # so the required `checks` context can never appear. Forty-six runs concluded
   # `action_required` before anything said so.

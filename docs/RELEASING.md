@@ -278,11 +278,11 @@ The release pull request is opened by `github-actions[bot]`, and every workflow 
 
 ```text
 $ gh-axi api repos/Abhijeet34/treadling/actions/permissions/fork-pr-contributor-approval
-approval_policy: first_time_contributors
+approval_policy: all_external_contributors
 ```
 
-GitHub documents that value as requiring approval for a contributor opening their first pull request to the repository.
-The bot holds no write access and has never had a pull request merged here, so it is that contributor on every release pull request, forever.
+GitHub documents that value as requiring approval for every contributor who is not a collaborator on the repository.
+The bot holds no write access and is no collaborator here, so it is that contributor on every release pull request, forever.
 
 A parked run is not a slow run.
 The branch name in the two measurements below ends in the package's old name, which ADR-0038 retired; release-please derives that branch from the package name, but what it derives under the scoped `@abhijeet34/treadling` name is unread rather than predicted, and will be taken from the first real release-please run under that name: this document's convention, and ADR-0038 and ADR-0039, state only what a run showed, and a scope's `@` and `/` cannot survive unchanged in a git branch component, so any derived value here would be a guess dressed as a measurement.
@@ -428,7 +428,7 @@ A settings script that half-applies is worse than one that refuses, because the 
 | `.github/settings/repository.json` | Squash-only, keeping the commit messages so a `Release-As:` footer survives, and deleting a branch once its pull request merges |
 | `.github/settings/actions-permissions.json` | `sha_pinning_required`, so an unpinned action cannot come back |
 | `.github/settings/actions-workflow-permissions.json` | A read-only default token, and permission for Actions to open a pull request. See "Why Actions may create pull requests" |
-| `.github/settings/actions-fork-pr-approval.json` | `first_time_contributors`, which is why the release pull request's checks park. See "What stands between the release pull request and a merge" |
+| `.github/settings/actions-fork-pr-approval.json` | `all_external_contributors`, which is why the release pull request's checks park. See "What stands between the release pull request and a merge" |
 
 The `npm-publish` environment and its required reviewer are not in that script.
 An environment that gates publication should be created deliberately by the person who owns the account, at the moment they decide to open the gate.

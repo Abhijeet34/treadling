@@ -3,8 +3,8 @@
 // person to click.
 //
 // release-please opens that pull request as `github-actions[bot]`, which holds no write
-// access and has never had a pull request merged here, so this repository's
-// `first_time_contributors` approval policy parks every run on it. A parked run attaches no
+// access and is no collaborator here, so this repository's
+// `all_external_contributors` approval policy parks every run on it. A parked run attaches no
 // check to the pull request at all: `gh pr checks 69` reported "no CI checks configured"
 // while forty-six runs sat at `action_required`, and `.github/rulesets/main.json` requires
 // the `checks` context, so the one pull request that carries a release was the one pull
