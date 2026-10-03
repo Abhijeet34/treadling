@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // The process boundary, and the esbuild entry point (DR1). It owns argv, the streams, the
-// TTY test and the exit status; everything a test needs to drive is `run`, which takes all
-// four as arguments, so the suite never spawns a process to check what a command printed.
+// TTY test, the clock and the exit status; everything a test needs to drive is `run`, which
+// takes all of them as arguments, so the suite never spawns a process to check what a
+// command printed.
 //
 // `bin/treadling.js` imports this file to run from source in development. The release build
 // bundles it into `dist/treadling.js`, which is the executable the published package installs.
@@ -9,6 +10,7 @@
 import module from 'node:module'
 import process from 'node:process'
 
+import { systemClock } from '../adapters/clock.ts'
 import { run } from './main.ts'
 import { EXIT_INTERRUPTED } from './exit.ts'
 
@@ -51,6 +53,7 @@ const code = await run({
     out: (text) => process.stdout.write(text),
     err: (text) => process.stderr.write(text),
   },
+  clock: systemClock,
 })
 
 // An interrupt that arrived while the command ran keeps its status.

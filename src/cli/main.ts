@@ -24,8 +24,8 @@ import { RELATION_VERBS, relate, type RelationVerb } from '../application/servic
 import { removeItem } from '../application/services/removal.ts'
 import { transition } from '../application/services/lifecycle.ts'
 import { actorKindRefusal, actorRefusal, type Actor, type Mode, type Target } from '../application/services/mutation.ts'
+import type { Clock } from '../application/ports/clock.ts'
 import type { Store } from '../application/ports/store.ts'
-import { systemClock } from '../adapters/clock.ts'
 import { randomIds } from '../adapters/ids.ts'
 import { LoggingStore } from '../adapters/logging-store.ts'
 import { SCHEMA, openWorkspace } from '../adapters/store/index.ts'
@@ -68,6 +68,7 @@ export type Environment = {
   readonly isTTY: boolean
   readonly nodeVersion: string
   readonly streams: Streams
+  readonly clock: Clock
 }
 
 function flag(flags: Readonly<Record<string, unknown>>, name: string): string | undefined {
@@ -503,7 +504,7 @@ async function execute(env: Environment): Promise<number> {
   if (command === 'init') {
     const at = flag(flags, 'workspace') ?? path.join(env.cwd, WORKSPACE_DIR)
     const name = flag(flags, 'name')
-    const result = await initWorkspace(systemClock, randomIds, {
+    const result = await initWorkspace(env.clock, randomIds, {
       at,
       ...(name === undefined ? {} : { name }),
       actor: actorOf(env, flags),
@@ -576,13 +577,13 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
   const { command, operands, flags, store, target } = input
   const actor = actorOf(env, flags)
 
-  if (command === undefined || command === 'status') return status(store, systemClock)
+  if (command === undefined || command === 'status') return status(store, env.clock)
 
   if (command === 'backlog') {
     const columns = fieldsOf(flags, DEFAULT_BACKLOG_COLUMNS)
     const absence = flag(flags, 'explain-absence')
     const cursor = flag(flags, 'cursor')
-    return backlog(store, systemClock, {
+    return backlog(store, env.clock, {
       filters: filtersOf(flags, input.filterOrder),
       columns,
       limit: positiveInt(flag(flags, 'limit'), DEFAULT_LIMIT),
@@ -591,7 +592,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     })
   }
 
-  if (command === 'doctor') return doctor(store, systemClock)
+  if (command === 'doctor') return doctor(store, env.clock)
 
   if (command === 'config') {
     const verb = operands[0]
@@ -606,14 +607,14 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     // character, so the clearing syntax `set <field>=` has nothing to mean and a key is put
     // back to its default by writing the default, which the `source` column then reports.
     if (value === undefined) return validation('config', `config set needs the value to write to ${key}`, ['treadling config', `treadling help config`])
-    return setConfig(target, systemClock, randomIds, { key, value, actor })
+    return setConfig(target, env.clock, randomIds, { key, value, actor })
   }
 
   if (command === 'next') {
     const forActor = flag(flags, 'for')
     const absence = flag(flags, 'explain-absence')
     const cursor = flag(flags, 'cursor')
-    return next(store, systemClock, {
+    return next(store, env.clock, {
       limit: positiveInt(flag(flags, 'limit'), DEFAULT_NEXT_LIMIT),
       ...(cursor === undefined ? {} : { cursor }),
       ...(forActor === undefined ? {} : { forActor }),
@@ -624,11 +625,11 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
   const id = operands[0]
   if (command === 'show') {
     if (id === undefined) return validation('show', 'show needs the id of one item', ['treadling backlog'])
-    return showItem(store, systemClock, id, flag(flags, 'field'))
+    return showItem(store, env.clock, id, flag(flags, 'field'))
   }
   if (command === 'explain') {
     if (id === undefined) return validation('explain', 'explain needs the id of one item', ['treadling backlog'])
-    return explain(store, systemClock, id)
+    return explain(store, env.clock, id)
   }
   if (command === 'history') {
     const txn = flag(flags, 'txn')
@@ -669,7 +670,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     const chosen = flag(flags, 'id')
     const given = setFieldsOf(flags, title)
     if ('refusal' in given) return given.refusal
-    return fileItem(target, systemClock, randomIds, {
+    return fileItem(target, env.clock, randomIds, {
       type: type as WorkItemType, title, ...(chosen === undefined ? {} : { id: chosen }),
       fields: given.fields, actor,
     })
@@ -682,7 +683,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     if (twice !== undefined) {
       return validation('set', `${twice} is assigned more than once on this line and the last would silently replace the first`, ['treadling help set'])
     }
-    return setFields(target, systemClock, randomIds, { id, assignments, actor })
+    return setFields(target, env.clock, randomIds, { id, assignments, actor })
   }
 
   if (command === 'mark') {
@@ -690,7 +691,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     const severity = flag(flags, 'severity')
     const priority = flag(flags, 'priority')
     const reason = flag(flags, 'reason')
-    return markItem(target, systemClock, randomIds, {
+    return markItem(target, env.clock, randomIds, {
       id,
       ...(severity === undefined ? {} : { severity }),
       ...(priority === undefined ? {} : { priority }),
@@ -709,7 +710,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     if (entity === undefined || kind === undefined || ref === undefined) {
       return validation('evidence', 'evidence add needs an id, a kind and a ref', ['treadling help evidence'])
     }
-    return addEvidence(target, systemClock, randomIds, {
+    return addEvidence(target, env.clock, randomIds, {
       id: entity, kind, ref, ...(label === undefined ? {} : { label }), actor,
     })
   }
@@ -722,7 +723,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     if (entity === undefined || kind === undefined || other === undefined) {
       return validation('relation', `relation ${verb} needs an id, a kind and the other id`, ['treadling help relation'])
     }
-    return relate(target, systemClock, randomIds, { verb: verb as RelationVerb, id: entity, kind, other, actor })
+    return relate(target, env.clock, randomIds, { verb: verb as RelationVerb, id: entity, kind, other, actor })
   }
 
   if (command === 'remove') {
@@ -737,7 +738,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
         ['treadling remove <id> --reason "<why>" --yes'])
     }
     const reason = flag(flags, 'reason')
-    return removeItem(target, systemClock, randomIds, {
+    return removeItem(target, env.clock, randomIds, {
       id, ...(reason === undefined ? {} : { reason }), confirmed: flags['yes'] === true, actor,
     })
   }
@@ -757,7 +758,7 @@ async function dispatch(env: Environment, input: Dispatch): Promise<ResultObject
     // here: a second copy of the set in the command layer is a second thing to keep in step.
     const resolution = flag(flags, 'resolution') as Resolution | undefined
     const outcome = flag(flags, 'outcome') as AttemptOutcome | undefined
-    return transition(target, systemClock, randomIds, {
+    return transition(target, env.clock, randomIds, {
       id,
       target: targetState as WorkItemState | 'resume',
       ...(reason === undefined ? {} : { reason }),

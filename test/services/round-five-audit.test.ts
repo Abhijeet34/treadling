@@ -16,7 +16,7 @@ import { describe, it, before, after } from 'node:test'
 
 import { openWorkspace } from '../../src/adapters/store/index.ts'
 import { activeBlockerIndex, activeBlockers, readWorkspace } from '../../src/application/services/context.ts'
-import { runCli } from '../helpers/cli-run.ts'
+import { MONTH, runCli } from '../helpers/cli-run.ts'
 
 const ENV = { TREADLING_ACTOR: 'dana' } as const
 
@@ -222,7 +222,7 @@ describe('an id another record still names is not free', () => {
     assert.equal((await cli(['file', 'task', 'item bb', '--id', 'item-bb'])).code, 0)
     assert.equal((await cli(['relation', 'add', 'item-aa', 'blocks', 'item-bb'])).code, 0)
     // The hand delete D1 permits: the record goes, its neighbour's edge stays.
-    const shard = path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+    const shard = path.join(root, '.work', 'items', `${MONTH}.md`)
     const text = await readFile(shard, 'utf8')
     const kept = text.split(/(?=^# )/m).filter((record) => !record.startsWith('# item-bb:')).join('')
     await writeFile(shard, kept)
@@ -246,7 +246,7 @@ describe('a derived slug skips an id a stored edge still names', () => {
     assert.equal((await cli(['file', 'task', 'item aa', '--id', 'item-aa'])).code, 0)
     assert.equal((await cli(['file', 'task', 'item bb', '--id', 'item-bb'])).code, 0)
     assert.equal((await cli(['relation', 'add', 'item-aa', 'blocks', 'item-bb'])).code, 0)
-    const shard = path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+    const shard = path.join(root, '.work', 'items', `${MONTH}.md`)
     const text = await readFile(shard, 'utf8')
     await writeFile(shard, text.split(/(?=^# )/m).filter((record) => !record.startsWith('# item-bb:')).join(''))
   })
