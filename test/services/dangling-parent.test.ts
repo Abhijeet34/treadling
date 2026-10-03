@@ -17,14 +17,14 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { describe, it, before, after } from 'node:test'
 
-import { runCli } from '../helpers/cli-run.ts'
+import { MONTH, runCli } from '../helpers/cli-run.ts'
 
 const ENV = { TREADLING_ACTOR: 'dana' } as const
 
 type Cli = (argv: readonly string[]) => Promise<{ code: number; out: string; err: string }>
 
 const shardOf = (root: string): string =>
-  path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+  path.join(root, '.work', 'items', `${MONTH}.md`)
 
 async function edit(file: string, change: (text: string) => string): Promise<void> {
   await writeFile(file, change(await readFile(file, 'utf8')))

@@ -13,7 +13,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { describe, it, before, after } from 'node:test'
 
-import { runCli } from '../helpers/cli-run.ts'
+import { MONTH, runCli } from '../helpers/cli-run.ts'
 
 const ENV = { TREADLING_ACTOR: 'dana' } as const
 
@@ -45,7 +45,7 @@ describe('SEAM-1: an ok envelope carries the code its exit status comes from', (
   it('says on line 1 what --contract promises the exit status is a function of', async () => {
     // A CRLF shard is the `H16` a Windows clone produces by accident, and the one finding
     // `doctor` serves rather than hides: it answers `ok` and exits 0.
-    const shard = path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+    const shard = path.join(root, '.work', 'items', `${MONTH}.md`)
     const text = await readFile(shard, 'utf8')
     await writeFile(shard, text.replaceAll('\n', '\r\n'))
 
@@ -58,7 +58,7 @@ describe('SEAM-1: an ok envelope carries the code its exit status comes from', (
   it('prints the code on an ok line whose exit status is not 0, and only then', async () => {
     // A record the store holds and cannot serve: `doctor` answers `ok` and exits 7, which is
     // the one case the contract's own rule was false for.
-    const shard = path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+    const shard = path.join(root, '.work', 'items', `${MONTH}.md`)
     await writeFile(shard, `${await readFile(shard, 'utf8')}\n# : \nstate: draft\n`)
 
     const doctor = await cli(['doctor'])
@@ -77,7 +77,7 @@ describe('SEAM-2: status and doctor count findings by one definition', () => {
   before(async () => {
     ({ root, cli } = await aWorkspace())
     must(await cli(['file', 'task', 'A first task', '--id', 'first-task']), 'file')
-    const shard = path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+    const shard = path.join(root, '.work', 'items', `${MONTH}.md`)
     await writeFile(shard, (await readFile(shard, 'utf8')).replaceAll('\n', '\r\n'))
   })
   after(async () => { await rm(root, { recursive: true, force: true }) })

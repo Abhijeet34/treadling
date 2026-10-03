@@ -43,6 +43,7 @@
   "scripts": {
     "build": "node scripts/build.ts",
     "test": "node --test \"test/**/*.test.ts\"",
+    "test:at": "node scripts/test-at.ts",
     "coverage": "node scripts/coverage.ts",
     "flake": "node scripts/flake.ts",
     "typecheck": "tsc --noEmit",

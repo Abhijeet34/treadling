@@ -15,7 +15,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { describe, it, before, after } from 'node:test'
 
-import { runCli } from '../helpers/cli-run.ts'
+import { MONTH, runCli } from '../helpers/cli-run.ts'
 
 const ENV = { TREADLING_ACTOR: 'dana' } as const
 
@@ -29,7 +29,7 @@ async function aWorkspace(): Promise<{ root: string; cli: Cli }> {
 }
 
 const shardOf = (root: string): string =>
-  path.join(root, '.work', 'items', `${new Date().toISOString().slice(0, 7)}.md`)
+  path.join(root, '.work', 'items', `${MONTH}.md`)
 
 /** Rewrite one file through a function, which is the hand edit D1 permits. */
 async function edit(file: string, change: (text: string) => string): Promise<void> {
