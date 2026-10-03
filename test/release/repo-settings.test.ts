@@ -2,11 +2,13 @@
 // scripts/apply-repo-settings.sh half-applied: it stopped at the first refusal, so a rejected
 // tag ruleset skipped the repository settings and both Actions permission calls and still
 // exited 1, leaving the repository in a state the exit code could not describe. These tests
-// drive the real script with a gh-axi stub on PATH, so what is asserted is the calls it
+// drive the real script with gh and gh-axi stubs on PATH, so what is asserted is the calls it
 // actually makes and what it says about the ones that failed.
 //
-// The stub logs every invocation and refuses the ones whose argument line contains
-// GH_AXI_FAIL, which is how a single forge refusal is reproduced without a forge.
+// Each stub logs every invocation with its own name and refuses the ones whose argument line
+// contains GH_AXI_FAIL, which is how a single forge refusal is reproduced without a forge. The
+// gh-axi stub also refuses the flags the real `gh-axi api` lacks: a stub that accepted them kept
+// this suite green while every write the script made was refused on the forge.
 
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
@@ -22,8 +24,13 @@ const ROOT = fileURLToPath(new URL('../..', import.meta.url))
 const SCRIPT = path.join(ROOT, 'scripts/apply-repo-settings.sh')
 const REPO = 'owner/repo'
 
-const STUB = `#!/bin/sh
-printf '%s\\n' "$*" >> "$GH_AXI_LOG"
+const stub = (name: string, refused: string): string => `#!/bin/sh
+for arg in "$@"; do
+  case "$arg" in
+    ${refused}) echo "error: unknown flag $arg for ${name} api" >&2; exit 1 ;;
+  esac
+done
+printf '%s\\n' "${name} $*" >> "$GH_AXI_LOG"
 if [ -n "\${GH_AXI_FAIL:-}" ]; then
   case "$*" in
     *"$GH_AXI_FAIL"*) echo "gh-axi: HTTP 422 Validation error" >&2; exit 1 ;;
@@ -39,8 +46,12 @@ type Result = { readonly code: number; readonly stderr: string; readonly calls: 
 async function apply(refuse = ''): Promise<Result> {
   const dir = await mkdtemp(path.join(tmpdir(), 'treadling-settings-'))
   const log = path.join(dir, 'calls')
-  await writeFile(path.join(dir, 'gh-axi'), STUB)
-  await chmod(path.join(dir, 'gh-axi'), 0o755)
+  // The flags `gh-axi api` refuses, as its own error lists what it supports: --field, --header,
+  // --jq, --template, --paginate.
+  for (const [name, refused] of [['gh-axi', '-X|--method|-X*|--method=*|--input|--input=*'], ['gh', '--never']] as const) {
+    await writeFile(path.join(dir, name), stub(name, refused))
+    await chmod(path.join(dir, name), 0o755)
+  }
   await writeFile(log, '')
 
   const env = { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH ?? ''}`, GH_AXI_LOG: log, GH_AXI_FAIL: refuse }
@@ -70,7 +81,7 @@ const WRITES = [
 ]
 
 function sent(calls: readonly string[], file: string): boolean {
-  return calls.some((call) => call.includes(`--input ${file}`) && call.includes('-X '))
+  return calls.some((call) => call.startsWith('gh api -X ') && call.includes(`--input ${file}`))
 }
 
 describe('apply-repo-settings.sh', () => {
